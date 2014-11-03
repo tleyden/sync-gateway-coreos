@@ -1,5 +1,11 @@
 
-This repo contains the following:
+## Overall architecture
+
+![architecture diagram](http://tleyden-misc.s3.amazonaws.com/blog_images/sync-gw-coreos-onion.png)
+
+Since this repo *only* contains things related to [Sync Gateway](https://github.com/couchbase/sync_gateway), if you want the entire system you'll also need to check out [couchbase-server-coreos](https://github.com/tleyden/couchbase-server-coreos).
+
+## Repo contents
 
 * A Dockerfile to build a Sync Gateway docker container
 * Fleet unit file(s) to launch Sync Gateway 

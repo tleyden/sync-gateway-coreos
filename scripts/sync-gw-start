@@ -2,11 +2,11 @@
 
 # Usage:
 #
-# sync-gw-start -c master -g http://gist.github.com/34324/sgconf.json
+# sync-gw-start -c image -g http://gist.github.com/34324/sgconf.json
 #
-# Args:
+# Required Args:
 #
-# -c the commit or branch to use.  If omitted, will use master branch at time of docker image build
+# -c the commit or branch to use.  If "image" is given, will use master branch at time of docker image build.
 # -g the Sync Gateway config file or URL to use.
 
 usage="./sync-gw-start -c master -g http://gist.github.com/34324/sgconf.json"
@@ -30,9 +30,15 @@ if [ -z "$configFileOrURL" ] ; then
     echo "Usage: $usage"
     exit 1
 fi
+if [ -z "$commit" ] ; then
+    echo "Missing argument: commit"
+    echo "Usage: $usage"
+    exit 1
+fi
+
 
 # if a commit was given, we need to update to that commit and rebuild
-if [ -n "$commit" ] ; then
+if [ "$commit" != "image" ] ; then
     echo "Updating to $commit"
     cd $SGROOT
     ./clean.sh && \
