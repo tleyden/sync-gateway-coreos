@@ -10,7 +10,7 @@ Folow the steps in [couchbase-server-coreos](https://github.com/tleyden/couchbas
 
 ## Add security groups
 
-A few ports will need to be opened up for Sync Gateway.
+A few ports will need to be opened up for Sync Gateway.  Edit the Couchbase-CoreOS-CoreOSSecurityGroup-xxxx security group and add the following rules: 
 
 Type  | Protocol | Port Range | Source | 
 ------------- | ------------- | ------------- | ------------- 
