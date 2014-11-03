@@ -13,7 +13,7 @@ Folow the steps in [couchbase-server-coreos](https://github.com/tleyden/couchbas
 A few ports will need to be opened up for Sync Gateway.
 
 Type  | Protocol | Port Range | Source | 
-------------- | -------------
+------------- | ------------- | ------------- | ------------- 
 Custom TCP Rule  | TCP | 4985 | Custom IP: sg-6e5a0d04 (copy and paste from port 4001 rule)
 Custom TCP Rule  | TCP | 4984 | Anywhere: 0.0.0.0/0 
 
