@@ -34,9 +34,16 @@ $ chmod +x cluster-init.sh
 $ ./cluster-init.sh -n 1 -c "master" -g "http://bit.ly/1Edo7OX"
 ```
 
-You'll need to replace `http://bit.ly/1Edo7OX` with a link to your Sync Gateway config.  For example, a github gist file or a file hosted on your own webserver.
+You'll need to replace `http://bit.ly/1Edo7OX` with a link to your own Sync Gateway config.  For example, a github gist file or a file hosted on your own webserver.  
 
-See [cluster-init.sh](https://raw.githubusercontent.com/tleyden/sync-gateway-coreos/master/scripts/cluster-init.sh) for a description of the other args.
+You'll want to customize your Sync Gateway config to use Couchbase Server instead of walrus, so your config should look something like the [TodoLite config](https://github.com/couchbase/sync_gateway/blob/master/examples/democlusterconfig.json#L136-L182), with the `server` field pointing to your own Couchbase Server ip.  To find your own server IP to use, run:
+
+```
+$ echo $(etcdctl get /services/couchbase/bootstrap_ip):8091
+ip-10-150-70-83.ec2.internal:8091
+```
+
+See [cluster-init.sh](https://raw.githubusercontent.com/tleyden/sync-gateway-coreos/master/scripts/cluster-init.sh) for a description of the other arguments required to this script.
 
 ## Verify internal
 
