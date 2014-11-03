@@ -1,0 +1,45 @@
+#!/bin/sh
+
+# Usage:
+#
+# sync-gw-start -c master -g http://gist.github.com/34324/sgconf.json
+#
+# Args:
+#
+# -c the commit or branch to use.  If omitted, will use master branch at time of docker image build
+# -g the Sync Gateway config file or URL to use.
+
+usage="./sync-gw-start -c master -g http://gist.github.com/34324/sgconf.json"
+
+SGROOT="/opt/sync_gateway"
+
+while getopts ":c:g:" opt; do
+      case $opt in
+        c  ) commit=$OPTARG ;;
+        g  ) configFileOrURL=$OPTARG ;;
+        \? ) echo $usage
+             exit 1 ;;
+      esac
+done
+
+shift $(($OPTIND - 1))
+
+# make sure required args were given
+if [ -z "$configFileOrURL" ] ; then
+    echo "Missing argument: configFileOrURL"
+    echo "Usage: $usage"
+    exit 1
+fi
+
+# if a commit was given, we need to update to that commit and rebuild
+if [ -n "$commit" ] ; then
+    echo "Updating to $commit"
+    cd $SGROOT
+    ./clean.sh && \
+    git pull origin master && \
+    git checkout $commit && \
+    git submodule update --init --recursive && \
+        ./build.sh && \
+        cp bin/sync_gateway /usr/local/bin
+fi
+
