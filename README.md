@@ -6,7 +6,7 @@
 
 ## Couchbase Server
 
-Folow the steps in [couchbase-server-coreos](https://github.com/tleyden/couchbase-server-coreos) to get a Couchbase Server cluster up and running.
+Folow the steps in [couchbase-server-coreos](https://github.com/tleyden/couchbase-server-coreos/tree/master/2.2) to get a Couchbase Server 2.2 cluster up and running.
 
 ## Add security groups
 
