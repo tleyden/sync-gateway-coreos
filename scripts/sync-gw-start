@@ -43,3 +43,5 @@ if [ -n "$commit" ] ; then
         cp bin/sync_gateway /usr/local/bin
 fi
 
+# start sync gateway
+sync_gateway $configFileOrURL
