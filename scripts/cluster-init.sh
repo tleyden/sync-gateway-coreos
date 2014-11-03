@@ -11,7 +11,7 @@
 
 usage="./cluster-init.sh -n 1 -c \"master\" -g \"http://foo.com/config.json\""
 
-while getopts ":n:u:" opt; do
+while getopts ":n:c:g:" opt; do
       case $opt in
         n  ) numnodes=$OPTARG ;;
         c  ) commit=$OPTARG ;;
