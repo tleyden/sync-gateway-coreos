@@ -1,8 +1,7 @@
 
-## Overall architecture
+Follow the steps below to create a Sync Gateway + Couchbase Server cluster running under AWS with the following architecture:
 
 ![architecture diagram](http://tleyden-misc.s3.amazonaws.com/blog_images/sync-gw-coreos-onion.png)
-
 
 ## Couchbase Server
 
