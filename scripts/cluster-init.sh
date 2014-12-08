@@ -36,19 +36,18 @@ if ! [[ $numnodes =~ $re ]] ; then
    echo "error: Not a number" >&2; exit 1
 fi
 
-# clone repo with fleet unit files
-git clone https://github.com/tleyden/sync-gateway-coreos.git
-
-# generate unit files from template
-for i in `seq 1 $numnodes`;
-do
-   cp sync-gateway-coreos/fleet/sync_gw_node.service.template sync_gw_node.$i.service
-done
-
 # add values to etcd
 etcdctl set /services/sync-gateway/config "$configFileOrURL"
 etcdctl set /services/sync-gateway/commit "$commit"
 
-# launch fleet!
-fleetctl start sync_gw_node.*.service
+# clone repo with fleet unit files
+git clone https://github.com/tleyden/sync-gateway-coreos.git
 
+# register fleet untit files
+cd sync-gateway-coreos/fleet && fleetctl submit *.service
+
+# generate unit files from template
+for i in `seq 1 $numnodes`;
+do
+   fleetctl start sync_gw_node@$i.service && fleetctl start sync_gw_announce@$i.service
+done
