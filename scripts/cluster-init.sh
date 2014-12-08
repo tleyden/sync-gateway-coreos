@@ -17,7 +17,7 @@ while getopts ":n:c:g:" opt; do
         c  ) commit=$OPTARG ;;
         g  ) configFileOrURL=$OPTARG ;;
         \? ) echo $usage
-             exit 1 ;; 
+             exit 1 ;;
       esac
 done
 
@@ -27,7 +27,7 @@ shift $(($OPTIND - 1))
 if [[ -z "$numnodes" || -z "$commit" || -z "$configFileOrURL" ]] ; then
     echo "Missing required args"
     echo "Usage: $usage"
-    exit 1 
+    exit 1
 fi
 
 # validate numnodes argument
@@ -40,9 +40,9 @@ fi
 git clone https://github.com/tleyden/sync-gateway-coreos.git
 
 # generate unit files from template
-for i in `seq 1 $NUM_NODES`;
+for i in `seq 1 $numnodes`;
 do
-    cd sync-gateway-coreos/fleet && cp sync_gw_node.service.template sync_gw_node.$i.service
+   cp sync-gateway-coreos/fleet/sync_gw_node.service.template sync_gw_node.$i.service
 done
 
 # add values to etcd
@@ -51,7 +51,4 @@ etcdctl set /services/sync-gateway/commit "$commit"
 
 # launch fleet!
 fleetctl start sync_gw_node.*.service
-
-
-
 
