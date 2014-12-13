@@ -2,7 +2,7 @@
 Description=sync_gw_node
 
 [Service]
-TimeoutStartSec=1000
+TimeoutStartSec=0
 ExecStartPre=-/usr/bin/docker kill sync_gw
 ExecStartPre=-/usr/bin/docker rm sync_gw
 ExecStartPre=/usr/bin/docker pull tleyden5iwx/sync-gateway-coreos
@@ -10,5 +10,5 @@ ExecStart=/bin/bash -c 'SYNC_GW_COMMIT=$(etcdctl get /services/sync-gateway/comm
 ExecStop=/usr/bin/docker stop sync_gw
 
 [X-Fleet]
-Conflicts=sync_gw_node.*.service
+Conflicts=sync_gw_node*.service
 
