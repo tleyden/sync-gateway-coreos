@@ -11,7 +11,7 @@
 #   -m number of couchbase nodes to start
 #   -u the username and password as a single string, delimited by a colon (:)
 
-usage="./sync-gw-cluster-init.sh -n 1 -c \"master\" -b "todolite" -z "512" -g \"http://foo.com/config.json\" -v 3.0.1 -m 3 -u \"user:passw0rd\""
+usage="./sync-gw-cluster-init.sh -n 1 -c \"master\" -b \"todolite\" -z \"512\" -g \"http://foo.com/config.json\" -v 3.0.1 -m 3 -u \"user:passw0rd\""
 
 function untilsuccessful() {
 	"$@"
@@ -52,9 +52,12 @@ if ! [[ $numnodes =~ $re ]] ; then
    echo "error: Not a number" >&2; exit 1
 fi
 
-if 
-
 if [ "$version" != "0" ]; then
+
+    # parse user/pass into variables
+    IFS=':' read -a array <<< "$userpass"
+    CB_USERNAME=${array[0]}
+    CB_PASSWORD=${array[1]}
 
     # Kick off couchbase cluster 
     echo "Kick off couchbase cluster"
@@ -78,14 +81,14 @@ if [ "$version" != "0" ]; then
     echo "Couchbase Server bootstrap ip: $COUCHBASE_CLUSTER"
 
     # wait until all couchbase nodes come up
-    echo "Wait until $numnodes Couchbase Servers running"
+    echo "Wait until $num_cb_nodes Couchbase Servers running"
     NUM_COUCHBASE_SERVERS="0"
-    while [ "$NUM_COUCHBASE_SERVERS" -ne $num_cb_nodes ]; do
-	echo Retrying...
+    while (( $NUM_COUCHBASE_SERVERS != $num_cb_nodes )); do
+	echo "Retrying... $NUM_COUCHBASE_SERVERS != $num_cb_nodes"
 	NUM_COUCHBASE_SERVERS=$(sudo docker run tleyden5iwx/couchbase-server-$version /opt/couchbase/bin/couchbase-cli server-list -c $COUCHBASE_CLUSTER -u $CB_USERNAME -p $CB_PASSWORD | wc -l)
 	sleep 5
     done
-    echo "Done waiting: $numnodes Couchbase Servers are running"
+    echo "Done waiting: $num_cb_nodes Couchbase Servers are running"
 
     # rebalance cluster
     untilsuccessful sudo docker run tleyden5iwx/couchbase-server-$version /opt/couchbase/bin/couchbase-cli rebalance -c $COUCHBASE_CLUSTER -u $CB_USERNAME -p $CB_PASSWORD
@@ -94,7 +97,7 @@ if [ "$version" != "0" ]; then
     if [ -z "$bucket" ]; then
 	echo "No bucket specified, not creating one"
     else 
-	echo "Create a bucket"
+	echo "Create a bucket: $bucket with size: $bucket_size"
 	untilsuccessful sudo docker run tleyden5iwx/couchbase-server-$version /opt/couchbase/bin/couchbase-cli bucket-create -c $COUCHBASE_CLUSTER -u $CB_USERNAME -p $CB_PASSWORD --bucket=$bucket --bucket-ramsize=$bucket_size
 	echo "Done: created a bucket"
     fi
@@ -117,3 +120,5 @@ for i in `seq 1 $numnodes`;
 do
    fleetctl start sync_gw_node@$i.service && fleetctl start sync_gw_announce@$i.service
 done
+
+echo "Your couchbase server + sync gateway cluster is now active!"
