@@ -22,10 +22,9 @@ function untilsuccessful() {
 	done
 }
 
-while getopts ":n:c:g:" opt; do
+while getopts ":n:c:g:b:z:v:m:u:" opt; do
       case $opt in
         n  ) numnodes=$OPTARG ;;
-        m  ) num_cb_nodes=$OPTARG ;;
         c  ) commit=$OPTARG ;;
         b  ) bucket=$OPTARG ;;
         z  ) bucket_size=$OPTARG ;;
