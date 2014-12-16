@@ -134,7 +134,8 @@ $ curl http://coreos-322270867.us-east-1.elb.amazonaws.com/
 
 ## References
 
-* [sync gateway](https://github.com/couchbase/sync_gateway)
+* [sync gateway Docker + CoreOS fleet files](https://github.com/tleyden/sync-gateway-coreos)
 * [couchbase-server-coreos](https://github.com/tleyden/couchbase-server-coreos)
 * [Sync Gateway docs regarding reverse proxies](http://developer.couchbase.com/mobile/develop/guides/sync-gateway/nginx/index.html)
 * [Couchbase Mobile Google Group discussion on ELB](https://groups.google.com/forum/?utm_medium=email&utm_source=footer#!msg/mobile-couchbase/pXKQIAiCaW8/s9W_gSfRL50J)
+* [sync gateway](https://github.com/couchbase/sync_gateway)
