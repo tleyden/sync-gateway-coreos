@@ -3,46 +3,72 @@ Follow the steps below to create a Sync Gateway + Couchbase Server cluster runni
 
 ![architecture diagram](http://tleyden-misc.s3.amazonaws.com/blog_images/sync-gw-coreos-onion.png)
 
-## Couchbase Server
 
-Folow the steps in [couchbase-server-coreos](https://github.com/tleyden/couchbase-server-coreos/tree/master/2.2) to get a Couchbase Server 2.2 cluster up and running.
+## Kick off Couchbase Server + Sync Gateway cluster
 
-## Add security groups
+### Launch EC2 instances
 
-A few ports will need to be opened up for Sync Gateway.  Edit the Couchbase-CoreOS-CoreOSSecurityGroup-xxxx security group and add the following rules: 
+Go to the [Cloudformation Wizard](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn%7ECouchbase-CoreOS%7Cturl%7Ehttp://tleyden-misc.s3.amazonaws.com/couchbase-coreos/sync_gateway.template) 
 
-Type  | Protocol | Port Range | Source | 
-------------- | ------------- | ------------- | ------------- 
-Custom TCP Rule  | TCP | 4985 | Custom IP: sg-6e5a0d04 (copy and paste from port 4001 rule)
-Custom TCP Rule  | TCP | 4984 | Anywhere: 0.0.0.0/0 
+Recommended values:
 
+* **ClusterSize**: 3 nodes (default)
+* **Discovery URL**:  as it says, you need to grab a new token from https://discovery.etcd.io/new and paste it in the box.
+* **KeyPair**: the name of the AWS keypair you want to use.  If you haven't already, you'll want to upload your local ssh key into AWS and create a named keypair.
 
-## Download cluster-init script
+### ssh into a CoreOS instance
 
-Ssh into one of your CoreOS instances and run:
+Go to the AWS console under EC2 instances and find the public ip of one of your newly launched CoreOS instances.  
 
-```
-$ mkdir sync-gateway && cd sync-gateway
-$ wget https://raw.githubusercontent.com/tleyden/sync-gateway-coreos/master/scripts/cluster-init.sh
-$ chmod +x cluster-init.sh
-```
-
-## Launch Sync Gateway server(s)
+Choose any one of them (it doesn't matter which), and ssh into it as the **core** user with the cert provided in the previous step:
 
 ```
-$ ./cluster-init.sh -n 1 -c "master" -g "http://bit.ly/1Edo7OX"
+$ ssh -i aws.cer -A core@ec2-54-83-80-161.compute-1.amazonaws.com
 ```
 
-You'll need to replace `http://bit.ly/1Edo7OX` with a link to your own Sync Gateway config.  For example, a github gist file or a file hosted on your own webserver.  
+## Sanity check
 
-You'll want to customize your Sync Gateway config to use Couchbase Server instead of walrus, so your config should look something like the [TodoLite config](https://github.com/couchbase/sync_gateway/blob/master/examples/democlusterconfig.json#L136-L182), with the `server` field pointing to your own Couchbase Server ip.  To find your own server IP to use, run:
+Let's make sure the CoreOS cluster is healthy first:
 
 ```
-$ echo $(etcdctl get /services/couchbase/bootstrap_ip):8091
-ip-10-150-70-83.ec2.internal:8091
+$ fleetctl list-machines
 ```
 
-See [cluster-init.sh](https://raw.githubusercontent.com/tleyden/sync-gateway-coreos/master/scripts/cluster-init.sh) for a description of the other arguments required to this script.
+This should return a list of machines in the cluster, like this:
+
+```
+MACHINE	        IP              METADATA
+03b08680...     10.33.185.16    -
+209a8a2e...     10.164.175.9    -
+25dd84b7...     10.13.180.194   -
+```
+
+### Kick off cluster
+
+From the CoreOS machine you ssh'd into in the previous step:
+
+```
+$ wget https://raw.githubusercontent.com/tleyden/sync-gateway-coreos/master/scripts/sync-gw-cluster-init.sh
+$ chmod +x sync-gw-cluster-init.sh
+$ SG_CONFIG_URL=https://raw.githubusercontent.com/couchbaselabs/ToDoLite-iOS/master/sync-gateway-config.json
+$ ./sync-gw-cluster-init.sh -n 1 -c master -b "todos" -z 512 -g $SG_CONFIG_URL -v 3.0.1 -m 3 -u user:passw0rd
+```
+
+You'll want to use your own config URL for the SG_CONFIG_URL value.  For example, a file hosted in github or on your own webserver.  
+
+### View cluster
+
+After the above script finishes, run `fleetctl list-units` to list the services in your cluster, and you should see:
+
+```
+UNIT						MACHINE				ACTIVE	SUB
+couchbase_bootstrap_node.service                281cd575.../10.150.73.56        active	running
+couchbase_bootstrap_node_announce.service       281cd575.../10.150.73.56        active	running
+couchbase_node.1.service                        36ab135c.../10.79.132.157       active	running
+couchbase_node.2.service                        f815a846.../10.51.179.214       active	running
+sync_gw_announce@1.service                      36ab135c.../10.79.132.157       active	running
+sync_gw_node@1.service                          36ab135c.../10.79.132.157       active	running
+```
 
 ## Verify internal
 
@@ -68,7 +94,6 @@ $ curl 10.164.175.9:4985
 
 Using the internal ip found above, go to the EC2 Instances section of the AWS console, and hunt around until you find the instance with that internal ip, and then get the public ip for that instance, eg: `ec2-54-211-206-18.compute-1.amazonaws.com`
 
-
 **Curl**
 
 From your laptop, use the ip found above and run a curl request against the server root:
@@ -77,6 +102,20 @@ From your laptop, use the ip found above and run a curl request against the serv
 $ curl ec2-54-211-206-18.compute-1.amazonaws.com:4984
 {"couchdb":"Welcome","vendor":{"name":"Couchbase Sync Gateway","version":1},"version":"Couchbase Sync Gateway/master(6356065)"}
 ```
+
+Congratulations!  You now have a Couchbase Server + Sync Gateway cluster running.
+
+## Appendix A: Kicking off more Sync Gateway nodes.
+
+To launch two more Sync Gateway nodes, run the following command:
+
+```
+$ fleetctl start sync_gw_node@{2..3}.service && fleetctl start sync_gw_announce@{2..3}.service
+```
+
+## Appendix B: Setting up Elastic Load Balancer.
+
+TODO
 
 ## References
 
