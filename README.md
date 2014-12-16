@@ -115,9 +115,26 @@ $ fleetctl start sync_gw_node@{2..3}.service && fleetctl start sync_gw_announce@
 
 ## Appendix B: Setting up Elastic Load Balancer.
 
-TODO
+Setup an Elastic Load Balancer with the following settings:
+
+![elb screenshot](http://tleyden-misc.s3.amazonaws.com/blog_images/sync_gateway_coreos_elb.png)
+
+Note that it forwards to **port 4984**.
+
+Once the Load Balancer has been created, go to its configuration to get its DNS name:
+
+![elb screenshot](http://tleyden-misc.s3.amazonaws.com/blog_images/sync_gateway_coreos_elb2.png)
+
+Now you should be able to run curl against that:
+
+```
+$ curl http://coreos-322270867.us-east-1.elb.amazonaws.com/
+{"couchdb":"Welcome","vendor":{"name":"Couchbase Sync Gateway","version":1},"version":"Couchbase Sync Gateway/master(b47aee8)"}
+```
 
 ## References
 
 * [sync gateway](https://github.com/couchbase/sync_gateway)
 * [couchbase-server-coreos](https://github.com/tleyden/couchbase-server-coreos)
+* [Sync Gateway docs regarding reverse proxies](http://developer.couchbase.com/mobile/develop/guides/sync-gateway/nginx/index.html)
+* [Couchbase Mobile Google Group discussion on ELB](https://groups.google.com/forum/?utm_medium=email&utm_source=footer#!msg/mobile-couchbase/pXKQIAiCaW8/s9W_gSfRL50J)
