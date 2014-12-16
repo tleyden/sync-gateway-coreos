@@ -3,6 +3,7 @@ Follow the steps below to create a Sync Gateway + Couchbase Server cluster runni
 
 ![architecture diagram](http://tleyden-misc.s3.amazonaws.com/blog_images/sync-gw-coreos-onion.png)
 
+There is a [youtube video](https://www.youtube.com/watch?v=7-7jsLzHsWU) (12 mins) which walks through this entire setup process, or you can follow the instructions below.
 
 ## Kick off Couchbase Server + Sync Gateway cluster
 
