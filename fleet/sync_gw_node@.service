@@ -5,7 +5,7 @@ Description=sync_gw_node
 TimeoutStartSec=0
 ExecStartPre=-/usr/bin/docker kill sync_gw
 ExecStartPre=-/usr/bin/docker rm sync_gw
-ExecStartPre=/usr/bin/docker pull tleyden5iwx/sync-gateway-coreos
+ExecStartPre=-/usr/bin/docker pull tleyden5iwx/sync-gateway-coreos
 ExecStart=/bin/bash -c 'SYNC_GW_COMMIT=$(etcdctl get /services/sync-gateway/commit);  SYNC_GW_CONFIG=$(etcdctl get /services/sync-gateway/config); /usr/bin/docker run --name sync_gw --net=host tleyden5iwx/sync-gateway-coreos sync-gw-start -c $SYNC_GW_COMMIT -g $SYNC_GW_CONFIG'
 ExecStop=/usr/bin/docker stop sync_gw
 
