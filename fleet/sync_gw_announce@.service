@@ -4,8 +4,8 @@ BindsTo=sync_gw_node@%i.service
 After=sync_gw_node@%i.service
 
 [Service]
-ExecStart=/bin/sh -c "while true; do etcdctl set /services/sync_gw/sync_gw_node@%i '{ \"host\": \"%H\"}' --ttl 60;sleep 45;done"
-ExecStop=/usr/bin/etcdctl rm /services/sync_gw/sync_gw_node@%i
+ExecStart=/bin/sh -c "while true; do etcdctl set /couchbase.com/sync_gw/sync_gw_node@%i '{ \"host\": \"%H\"}' --ttl 60;sleep 45;done"
+ExecStop=/usr/bin/etcdctl rm /couchbase.com/sync_gw/sync_gw_node@%i
 
 [X-Fleet]
 MachineOf=sync_gw_node@%i.service
