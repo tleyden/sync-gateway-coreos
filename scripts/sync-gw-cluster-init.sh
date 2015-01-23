@@ -24,6 +24,7 @@ function untilsuccessful() {
 
 while getopts ":n:c:g:b:z:v:m:u:" opt; do
       case $opt in
+        s  ) startcbs=$OPTARG ;;
         n  ) numnodes=$OPTARG ;;
         c  ) commit=$OPTARG ;;
         b  ) bucket=$OPTARG ;;
@@ -70,35 +71,46 @@ if [ "$version" != "0" ]; then
 	exit 1 
     fi
 
-    # Wait until bootstrap node is up
-    echo "Wait until Couchbase bootstrap node is up"
-    while [ -z "$COUCHBASE_CLUSTER" ]; do
-	echo Retrying...
-	COUCHBASE_CLUSTER=$(etcdctl get /services/couchbase/bootstrap_ip)
-	sleep 5
-    done
+fi
 
-    echo "Couchbase Server bootstrap ip: $COUCHBASE_CLUSTER"
+# wait until all couchbase nodes come up (have at least numnodes in etcd)
+echo "Wait until $num_cb_nodes Couchbase Servers running"
+NUM_COUCHBASE_SERVERS="0"
+while (( $NUM_COUCHBASE_SERVERS != $num_cb_nodes )); do
+    echo "Retrying... $NUM_COUCHBASE_SERVERS != $num_cb_nodes"
+    NUM_COUCHBASE_SERVERS=$(etcdctl ls /couchbase.com/couchbase-node-state | wc -l)
+    sleep 5
+done
+echo "Done waiting: $num_cb_nodes Couchbase Servers are running"
 
-    # wait until all couchbase nodes come up
-    echo "Wait until $num_cb_nodes Couchbase Servers running"
-    NUM_COUCHBASE_SERVERS="0"
-    while (( $NUM_COUCHBASE_SERVERS != $num_cb_nodes )); do
-	echo "Retrying... $NUM_COUCHBASE_SERVERS != $num_cb_nodes"
-	NUM_COUCHBASE_SERVERS=$(sudo docker run tleyden5iwx/couchbase-server-$version /opt/couchbase/bin/couchbase-cli server-list -c $COUCHBASE_CLUSTER -u $CB_USERNAME -p $CB_PASSWORD | wc -l)
-	sleep 5
-    done
-    echo "Done waiting: $num_cb_nodes Couchbase Servers are running"
+# ie "/couchbase.com/couchbase-node-state/10.153.232.237"
+FIRST_NODE=$(etcdctl ls /couchbase.com/couchbase-node-state | sed -n 1p)
+
+if [[ -z "$FIRST_NODE" ]] ; then
+    echo "No couchbase nodes found in etcd"
+    exit 1
+fi
+
+# ie, "10.153.232.237"
+COUCHBASE_CLUSTER=$(echo $FIRST_NODE | awk -F/ '{ print $4 }')
+
+if [[ -z "$COUCHBASE_CLUSTER" ]] ; then
+    echo "Could not find ip of couchbase cluster node"
+    exit 1
+fi
+
+
+if [ "$version" != "0" ]; then
 
     # rebalance cluster
-    untilsuccessful sudo docker run tleyden5iwx/couchbase-server-$version /opt/couchbase/bin/couchbase-cli rebalance -c $COUCHBASE_CLUSTER -u $CB_USERNAME -p $CB_PASSWORD
+    untilsuccessful sudo docker run quay.io/tleyden/couchbase-server-$version /opt/couchbase/bin/couchbase-cli rebalance -c $COUCHBASE_CLUSTER -u $CB_USERNAME -p $CB_PASSWORD
 
     # create bucket
     if [ -z "$bucket" ]; then
 	echo "No bucket specified, not creating one"
     else 
 	echo "Create a bucket: $bucket with size: $bucket_size"
-	untilsuccessful sudo docker run tleyden5iwx/couchbase-server-$version /opt/couchbase/bin/couchbase-cli bucket-create -c $COUCHBASE_CLUSTER -u $CB_USERNAME -p $CB_PASSWORD --bucket=$bucket --bucket-ramsize=$bucket_size
+	untilsuccessful sudo docker run quay.io/tleyden/couchbase-server-$version /opt/couchbase/bin/couchbase-cli bucket-create -c $COUCHBASE_CLUSTER -u $CB_USERNAME -p $CB_PASSWORD --bucket=$bucket --bucket-ramsize=$bucket_size
 	echo "Done: created a bucket"
     fi
 
