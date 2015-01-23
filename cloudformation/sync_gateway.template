@@ -10,17 +10,16 @@
   },
   "Parameters": {
     "InstanceType" : {
-      "Description" : "EC2 PV instance type (m3.medium, etc). Note: m1.small is not supported.",
+      "Description" : "EC2 PV instance type (m3.medium, etc).",
       "Type" : "String",
       "Default" : "m3.medium",
-      "AllowedValues" : ["m3.medium", "m3.large", "m3.xlarge", "m3.2xlarge", "m1.medium", "m1.large", "m1.xlarge", "c3.large", "c3.xlarge", "c3.2xlarge", "c3.4xlarge", "c3.8xlarge", "c1.medium", "c1.xlarge", "m2.xlarge", "m2.2xlarge", "m2.4xlarge", "hi1.4xlarge", "hs1.8xlarge", "t1.micro", "g2.2xlarge"],
-      "ConstraintDescription" : "Must be a valid EC2 PV instance type. Note: m1.small is not supported."
+      "ConstraintDescription" : "Must be a valid EC2 PV instance type."
     },
     "ClusterSize": {
       "Default": "3",
-      "MinValue": "3",
+      "MinValue": "1",
       "MaxValue": "12",
-      "Description": "Number of nodes in cluster (3-12).",
+      "Description": "Number of nodes in cluster (1-12).  3 or larger is recommended.",
       "Type": "Number"
     },
     "DiscoveryURL": {
@@ -149,7 +148,7 @@
       "Properties": {
         "AvailabilityZones": {"Fn::GetAZs": ""},
         "LaunchConfigurationName": {"Ref": "CoreOSServerLaunchConfig"},
-        "MinSize": "3",
+        "MinSize": "1",
         "MaxSize": "12",
         "DesiredCapacity": {"Ref": "ClusterSize"},
         "Tags": [
@@ -178,16 +177,11 @@
             "    content: |\n",
             "      [Service]\n",
             "      LimitMEMLOCK=infinity\n",
-            "  - path: /var/lib/couchbase/data/.README\n",
+            "  - path: /opt/couchbase/var/.README\n",
             "    owner: core:core\n",
             "    permissions: 0644\n",
             "    content: |\n",
-            "      Couchbase Data files are stored here\n",
-            "  - path: /var/lib/couchbase/index/.README\n",
-            "    owner: core:core\n",
-            "    permissions: 0644\n",
-            "    content: |\n",
-            "      Couchbase Index files are stored here\n",
+            "      Couchbase /opt/couchbase/var data volume in container mounted here\n",
             "  - path: /var/lib/cbfs/data/.README\n",
             "    owner: core:core\n",
             "    permissions: 0644\n",
