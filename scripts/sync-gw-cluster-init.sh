@@ -118,8 +118,8 @@ fi
 
 
 # add values to etcd
-etcdctl set /services/sync-gateway/config "$configFileOrURL"
-etcdctl set /services/sync-gateway/commit "$commit"
+etcdctl set /couchbase.com/sync-gateway/config "$configFileOrURL"
+etcdctl set /couchbase.com/sync-gateway/commit "$commit"
 
 # clone repo with fleet unit files
 git clone https://github.com/tleyden/sync-gateway-coreos.git
