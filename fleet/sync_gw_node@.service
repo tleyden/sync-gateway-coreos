@@ -5,9 +5,9 @@ Description=sync_gw_node
 TimeoutStartSec=0
 ExecStartPre=-/usr/bin/docker kill sync_gw
 ExecStartPre=-/usr/bin/docker rm sync_gw
-ExecStartPre=/usr/bin/docker pull tleyden5iwx/sync-gateway-coreos
-ExecStartPre=/usr/bin/docker run --net=host tleyden5iwx/sync-gateway-coreos couchbase-cluster-wrapper wait-until-running
-ExecStart=/bin/bash -c 'SYNC_GW_COMMIT=$(etcdctl get /couchbase.com/sync-gateway/commit);  SYNC_GW_CONFIG=$(etcdctl get /couchbase.com/sync-gateway/config); /usr/bin/docker run --name sync_gw --net=host tleyden5iwx/sync-gateway-coreos sync-gw-start -c $SYNC_GW_COMMIT -g $SYNC_GW_CONFIG'
+ExecStartPre=/usr/bin/docker pull tleyden5iwx/sync-gateway-coreos:0.3
+ExecStartPre=/usr/bin/docker run --net=host tleyden5iwx/sync-gateway-coreos:0.3 couchbase-cluster-wrapper wait-until-running
+ExecStart=/bin/bash -c 'SYNC_GW_COMMIT=$(etcdctl get /couchbase.com/sync-gateway/commit);  SYNC_GW_CONFIG=$(etcdctl get /couchbase.com/sync-gateway/config); /usr/bin/docker run --name sync_gw --net=host tleyden5iwx/sync-gateway-coreos:0.3 sync-gw-start -c $SYNC_GW_COMMIT -g $SYNC_GW_CONFIG'
 ExecStop=/usr/bin/docker stop sync_gw
 
 [X-Fleet]

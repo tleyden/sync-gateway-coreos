@@ -62,7 +62,7 @@ if [ "$version" != "0" ]; then
 
     # Kick off couchbase cluster 
     echo "Kick off couchbase cluster"
-    wget https://raw.githubusercontent.com/couchbaselabs/couchbase-server-docker/master/scripts/cluster-init.sh
+    wget https://raw.githubusercontent.com/couchbaselabs/couchbase-server-docker/support/0.3/scripts/cluster-init.sh
     chmod +x cluster-init.sh
     ./cluster-init.sh -v $version -n $num_cb_nodes -u $userpass
 
@@ -123,6 +123,9 @@ etcdctl set /couchbase.com/sync-gateway/commit "$commit"
 
 # clone repo with fleet unit files
 git clone https://github.com/tleyden/sync-gateway-coreos.git
+cd sync-gateway-coreos
+git checkout -t origin/support/0.3
+cd ..
 
 # register fleet untit files
 cd sync-gateway-coreos/fleet && fleetctl submit *.service
