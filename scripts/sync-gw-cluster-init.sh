@@ -103,14 +103,14 @@ fi
 if [ "$version" != "0" ]; then
 
     # rebalance cluster
-    untilsuccessful sudo docker run quay.io/tleyden/couchbase-server-$version /opt/couchbase/bin/couchbase-cli rebalance -c $COUCHBASE_CLUSTER -u $CB_USERNAME -p $CB_PASSWORD
+    untilsuccessful sudo docker run tleyden5iwx/couchbase-server-$version /opt/couchbase/bin/couchbase-cli rebalance -c $COUCHBASE_CLUSTER -u $CB_USERNAME -p $CB_PASSWORD
 
     # create bucket
     if [ -z "$bucket" ]; then
 	echo "No bucket specified, not creating one"
     else 
 	echo "Create a bucket: $bucket with size: $bucket_size"
-	untilsuccessful sudo docker run quay.io/tleyden/couchbase-server-$version /opt/couchbase/bin/couchbase-cli bucket-create -c $COUCHBASE_CLUSTER -u $CB_USERNAME -p $CB_PASSWORD --bucket=$bucket --bucket-ramsize=$bucket_size
+	untilsuccessful sudo docker run tleyden5iwx/couchbase-server-$version /opt/couchbase/bin/couchbase-cli bucket-create -c $COUCHBASE_CLUSTER -u $CB_USERNAME -p $CB_PASSWORD --bucket=$bucket --bucket-ramsize=$bucket_size
 	echo "Done: created a bucket"
     fi
 
