@@ -1,20 +1,18 @@
 
-FROM ubuntu:14.04
+FROM fgimenez/emacs-n-go
 
 MAINTAINER Traun Leyden <tleyden@couchbase.com>
 
 ENV GOPATH /opt/go
-ENV PATH /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$GOPATH/bin
+ENV PATH $PATH:/opt/go/bin
 ENV SGROOT /opt/sync_gateway
 
 # Get dependencies
 RUN apt-get update && apt-get install -y \
   git \
   bc \
-  golang \
   wget \
   curl 
-
 
 # Build Sync Gateway
 RUN mkdir -p $GOPATH && \
@@ -26,7 +24,6 @@ RUN mkdir -p $GOPATH && \
     ./build.sh && \
     cp bin/sync_gateway /usr/local/bin && \
     mkdir -p $SGROOT/data
-
 
 # Install Godep + couchbase-cluster-go
 RUN go get -u -v github.com/tools/godep && \
