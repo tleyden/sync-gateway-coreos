@@ -4,9 +4,9 @@ FROM ubuntu:14.04
 MAINTAINER Traun Leyden <tleyden@couchbase.com>
 
 ENV GOPATH /opt/go
-ENV PATH $PATH:/opt/go/bin
 ENV SGROOT /opt/sync_gateway
 ENV GOROOT /usr/local/go
+ENV PATH $PATH:$GOPATH/bin:$GOROOT/bin
 
 # Get dependencies
 RUN apt-get update && apt-get install -y \
