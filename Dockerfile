@@ -27,7 +27,8 @@ RUN wget http://golang.org/dl/go1.4.1.linux-amd64.tar.gz && \
 RUN go get github.com/tools/godep && \
     go get github.com/nsf/gocode && \
     go get code.google.com/p/go.tools/cmd/goimports && \
-    go get github.com/golang/lint/golint
+    go get github.com/golang/lint/golint && \
+    go get code.google.com/p/rog-go/exp/cmd/godef
 
 # clone emacs conf
 RUN git clone https://github.com/fgimenez/.emacs.d.git /root/.emacs.d && \
