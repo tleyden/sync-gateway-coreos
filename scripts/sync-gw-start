@@ -39,7 +39,7 @@ fi
 
 # if a commit was given, we need to update to that commit and rebuild
 if [ "$commit" != "image" ] ; then
-    echo "Updating to $commit"
+    echo "Rebuilding Sync Gateway for commit: $commit"
     cd $SGROOT
     ./clean.sh && \
     git pull origin master && \
