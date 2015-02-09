@@ -48,9 +48,6 @@ RUN mkdir -p $GOPATH && \
 # Install couchbase-cluster-go
 RUN godep get github.com/tleyden/couchbase-cluster-go/...
 
-# Put start script
-ADD scripts/couchbase-cluster-wrapper /usr/local/bin/
-
 # Add Sync Gateway launch script
 ADD scripts/sync-gw-start /usr/local/bin/
 
