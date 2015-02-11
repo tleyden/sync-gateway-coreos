@@ -6,3 +6,6 @@ Run Sync Gateway under Docker + CoreOS.
 
 * [Couchbase Server + Sync Gateway](http://tleyden.github.io/blog/2014/12/15/running-a-sync-gateway-cluster-under-coreos-on-aws/)
 
+## Issue Tracker
+
+Please file issues to the [couchbase-server-docker](https://github.com/couchbaselabs/couchbase-server-docker) repo.  
