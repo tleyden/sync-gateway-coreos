@@ -42,7 +42,7 @@ if [ "$commit" != "image" ] ; then
     echo "Rebuilding Sync Gateway for commit: $commit"
     cd $SGROOT
     ./clean.sh && \
-    git pull origin master && \
+    git pull && \
     git checkout $commit && \
     git submodule update --init --recursive && \
         ./build.sh && \
